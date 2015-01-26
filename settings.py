@@ -94,4 +94,5 @@ BOOTSTRAP3 = {
     },
 }
 
+from local_settings import *
 
