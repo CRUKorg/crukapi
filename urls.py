@@ -8,8 +8,6 @@ urlpatterns = patterns(
     # Urls for the admin site
     url(r'^djangoadmin/', include(admin.site.urls)),
 
-    # Include app specific url includes here
-
     # Urls for the main portal functions matches anything not caught by any other handler
     url(r'^portal', include("portal.urls")),
 
