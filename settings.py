@@ -94,5 +94,8 @@ BOOTSTRAP3 = {
     },
 }
 
-from local_settings import *
+try:
+    from local_settings import *
+except:
+    pass
 
