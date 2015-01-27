@@ -1,5 +1,6 @@
 import json
 import sys
+import urllib2
 from django.conf import settings
 from django.http import HttpResponse
 
@@ -35,4 +36,8 @@ class MockEngine(object):
 
 
 class ZooniverseEngine(MockEngine):
-    pass
+
+    def info(self):
+        request = urllib2.Request('https://api.zooniverse.org/projects/impossible_line')
+        response = urllib2.urlopen(request)
+        return HttpResponse(response.read(), content_type='application/json')

@@ -22,9 +22,18 @@ class APIInfoTestCase(TestCase):
         self.assertTrue(isinstance(response, HttpResponseNotAllowed))
 
     def test_mock_info_returns_valid_json(self):
+        with self.settings(API_IMPOSSIBLE_LINE_ENGINE="MockEngine"):
+            request = RequestFactory().get(self.url)
+            response = info(request)
+            self.assertEqual(response.content, json.dumps(MockEngine.mock_info_json))
+
+    def test_info_returns_valid_json_but_not_mock(self):
         request = RequestFactory().get(self.url)
         response = info(request)
-        self.assertEqual(response.content, json.dumps(MockEngine.mock_info_json))
+        self.assertNotEqual(response.content, json.dumps(MockEngine.mock_info_json))
+        response_object = json.loads(response.content)
+        for attr in MockEngine.mock_info_json.keys():
+            self.assertIn(attr, response_object)
 
 
 class EngineFactoryTestCase(TestCase):
