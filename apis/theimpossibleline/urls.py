@@ -4,7 +4,7 @@ from apis.theimpossibleline import views
 urlpatterns = patterns(
     '',
 
-    url(r'/*$',
+    url(r'^/*$',
         views.info,
         name='api_projects_impossible_line_info'),
 )
