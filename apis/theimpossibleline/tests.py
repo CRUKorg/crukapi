@@ -1,10 +1,11 @@
+from copy import copy
 import json
 import types
 from django.core.urlresolvers import resolve
 from django.http import HttpResponseNotAllowed
 from django.test import TestCase, RequestFactory
 from apis.theimpossibleline.engines import EngineFactory, ZooniverseEngine, MockEngine
-from apis.theimpossibleline.views import info
+from apis.theimpossibleline.views import proxy
 
 
 class APIInfoTestCase(TestCase):
@@ -15,25 +16,56 @@ class APIInfoTestCase(TestCase):
     def test_info_url(self):
         view = resolve(self.url)
         self.assertIsNotNone(view)
+        self.assertEqual(view.func, proxy)
 
     def test_info_accepts_only_get(self):
         request = RequestFactory().post(self.url)
-        response = info(request)
+        response = proxy(request)
         self.assertTrue(isinstance(response, HttpResponseNotAllowed))
 
     def test_mock_info_returns_valid_json(self):
         with self.settings(API_IMPOSSIBLE_LINE_ENGINE="MockEngine"):
             request = RequestFactory().get(self.url)
-            response = info(request)
+            response = proxy(request)
             self.assertEqual(response.content, json.dumps(MockEngine.mock_info_json))
 
     def test_info_returns_valid_json_but_not_mock(self):
         request = RequestFactory().get(self.url)
-        response = info(request)
+        response = proxy(request)
         self.assertNotEqual(response.content, json.dumps(MockEngine.mock_info_json))
         response_object = json.loads(response.content)
         for attr in MockEngine.mock_info_json.keys():
             self.assertIn(attr, response_object)
+
+
+class APISubjectsTestCase(TestCase):
+
+    def setUp(self):
+        self.url = "/api/projects/impossible_line/subjects?limit=1"
+
+    def test_subjects_url(self):
+        view = resolve(self.url)
+        self.assertIsNotNone(view)
+        self.assertEqual(view.func, proxy)
+
+    def test_subjects_returns_valid(self):
+        request = RequestFactory().get(self.url)
+        response = proxy(request)
+        response_object = json.loads(response.content)
+        self.assertTrue(isinstance(response_object, list))
+        self.assertTrue(len(response_object), 1)
+        obj = response_object[0]
+        for attr in MockEngine.mock_status_json.keys():
+            self.assertIn(attr, obj)
+
+    def test_get_variables_are_passed(self):
+        url = copy(self.url)
+        url.replace('limit=1', 'limit=2')
+        request = RequestFactory().get(url)
+        response = proxy(request)
+        response_object = json.loads(response.content)
+        self.assertTrue(isinstance(response_object, list))
+        self.assertTrue(len(response_object), 2)
 
 
 class EngineFactoryTestCase(TestCase):
@@ -51,11 +83,11 @@ class EngineFactoryTestCase(TestCase):
 
 class ZooniverseEngineTestCase(TestCase):
 
-    def test_engine_has_info_method(self):
+    def test_engine_has_proxy_method(self):
         with self.settings(API_IMPOSSIBLE_LINE_ENGINE="ZooniverseEngine"):
             engine = EngineFactory.get_engine(None)
-            self.assertTrue(hasattr(engine, 'info'))
-            self.assertEqual(type(getattr(engine, 'info')), types.MethodType)
+            self.assertTrue(hasattr(engine, 'proxy'))
+            self.assertEqual(type(getattr(engine, 'proxy')), types.MethodType)
 
     def test_request_is_passed_to_engine(self):
         request = "this is a dummy request object"

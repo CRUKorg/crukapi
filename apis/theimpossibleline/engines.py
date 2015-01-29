@@ -27,17 +27,35 @@ class MockEngine(object):
         "updated_at": "2014-07-14T15:16:52Z",
         "workflow_name": "impossible_line"}
 
+    mock_status_json = {
+        'random': 0.4766550899055938, 
+        'classification_count': 85, 
+        'created_at': '2014-07-14T15:41:24Z',
+        'updated_at': '2014-07-14T15:41:24Z',
+        'state': 'active',
+        'zooniverse_id': 'AIL000000x', 
+        'coords': [],
+        'location': {
+            'standard': 'http://www.generunner.net.s3-website-us-east-1.amazonaws.com/subjects/standard/52e42e8806715edea2000055.txt'},
+        'workflow_ids': ['53c3e9090ab4c05d28000002'],
+        'project_id': '53c3e9090ab4c05d28000001',
+        'id': '53c3f861eec846061b000021',
+        'metadata': {
+            'file_name': 'MB-0006Chrom3.txt',
+            'gene_runner_id': '52e42e8806715edea2000055'
+        }}
+
     def __init__(self, request):
         self.request = request
 
-    def info(self):
+    def proxy(self):
         json_return = json.dumps(MockEngine.mock_info_json)
         return HttpResponse(json_return, content_type='application/json')
 
 
 class ZooniverseEngine(MockEngine):
 
-    def info(self):
-        request = urllib2.Request('https://api.zooniverse.org/projects/impossible_line')
+    def proxy(self):
+        request = urllib2.Request('https://api.zooniverse.org%s' % ''.join(self.request.path[4:]))
         response = urllib2.urlopen(request)
         return HttpResponse(response.read(), content_type='application/json')

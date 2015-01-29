@@ -4,7 +4,7 @@ from apis.theimpossibleline.engines import EngineFactory
 
 
 @require_http_methods(["GET"])
-def info(request):
+def proxy(request):
     engine = EngineFactory.get_engine(request)
-    return engine.info()
+    return engine.proxy()
 
