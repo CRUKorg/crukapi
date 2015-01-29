@@ -60,12 +60,12 @@ class APISubjectsTestCase(TestCase):
 
     def test_get_variables_are_passed(self):
         url = copy(self.url)
-        url.replace('limit=1', 'limit=2')
+        url = url.replace('limit=1', 'limit=2')
         request = RequestFactory().get(url)
         response = proxy(request)
         response_object = json.loads(response.content)
         self.assertTrue(isinstance(response_object, list))
-        self.assertTrue(len(response_object), 2)
+        self.assertEqual(len(response_object), 2)
 
 
 class EngineFactoryTestCase(TestCase):

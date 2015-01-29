@@ -56,6 +56,10 @@ class MockEngine(object):
 class ZooniverseEngine(MockEngine):
 
     def proxy(self):
-        request = urllib2.Request('https://api.zooniverse.org%s' % ''.join(self.request.path[4:]))
+        if self.request.method == "GET":
+            request = urllib2.Request(
+                'https://api.zooniverse.org%s?%s' % (
+                    ''.join(self.request.path[4:]),
+                    '&'.join(["%s=%s" % (k, v) for k, v in self.request.GET.items()])))
         response = urllib2.urlopen(request)
         return HttpResponse(response.read(), content_type='application/json')
