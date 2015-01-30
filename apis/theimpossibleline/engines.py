@@ -1,8 +1,9 @@
 import json
 import sys
+import urllib
 import urllib2
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotAllowed
 
 
 class EngineFactory(object):
@@ -61,5 +62,11 @@ class ZooniverseEngine(MockEngine):
                 'https://api.zooniverse.org%s?%s' % (
                     ''.join(self.request.path[4:]),
                     '&'.join(["%s=%s" % (k, v) for k, v in self.request.GET.items()])))
+        elif self.request.method == "POST":
+            request = urllib2.Request(
+                'https://api.zooniverse.org%s' % ''.join(self.request.path[4:]),
+                urllib.urlencode(self.request.POST))
+        else:
+            return HttpResponseNotAllowed(["GET", "POST"])
         response = urllib2.urlopen(request)
         return HttpResponse(response.read(), content_type='application/json')

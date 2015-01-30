@@ -4,6 +4,18 @@ from apis.theimpossibleline import views
 urlpatterns = patterns(
     '',
 
+    url(r'/signup$',
+        views.proxy,
+        name='api_projects_impossible_line_signup'),
+
+    url(r'/login$',
+        views.proxy,
+        name='api_projects_impossible_line_login'),
+
+    url(r'/workflows/\w+/classifications',
+        views.proxy,
+        name='api_projects_impossible_line_classification'),
+
     url(r'/subjects',
         views.proxy,
         name='api_projects_impossible_line_subjects'),

@@ -7,7 +7,6 @@ from django.test import TestCase, RequestFactory
 from apis.theimpossibleline.engines import EngineFactory, ZooniverseEngine, MockEngine
 from apis.theimpossibleline.views import proxy
 
-
 class APIInfoTestCase(TestCase):
 
     def setUp(self):
@@ -66,6 +65,56 @@ class APISubjectsTestCase(TestCase):
         response_object = json.loads(response.content)
         self.assertTrue(isinstance(response_object, list))
         self.assertEqual(len(response_object), 2)
+
+
+class APISignupTestCase(TestCase):
+
+    def setUp(self):
+        self.url = "/api/projects/impossible_line/signup"
+
+    def test_signup_url(self):
+        view = resolve(self.url)
+        self.assertIsNotNone(view)
+        self.assertEqual(view.func, proxy)
+
+    def test_proxy_with_no_post_variables(self):
+        request = RequestFactory().post(self.url, {})
+        response = proxy(request)
+        response_object = json.loads(response.content)
+        self.assertIn("success", response_object)
+        self.assertFalse(response_object['success'])
+        self.assertTrue("Login can't be blank" in response_object['message'])
+
+    def test_proxy_can_pass_post_variable(self):
+        data = {'username': 'test', 'password': 'test', 'email': 'test@test.com', 'real_name': 'test'}
+        request = RequestFactory().post(self.url, data)
+        response = proxy(request)
+        response_object = json.loads(response.content)
+        self.assertIn("success", response_object)
+        self.assertFalse(response_object['success'])
+        self.assertTrue("Login has already been taken" in response_object['message'])
+
+
+class APILoginTestCase(TestCase):
+
+    def setUp(self):
+        self.url = "/api/projects/impossible_line/login"
+
+    def test_login_url(self):
+        view = resolve(self.url)
+        self.assertIsNotNone(view)
+        self.assertEqual(view.func, proxy)
+
+
+class APIClassificationTestCase(TestCase):
+
+    def setUp(self):
+        self.url = "/api/projects/impossible_line/workflows/fdf78d87f8d7fd/classifications"
+
+    def test_classification_url(self):
+        view = resolve(self.url)
+        self.assertIsNotNone(view)
+        self.assertEqual(view.func, proxy)
 
 
 class EngineFactoryTestCase(TestCase):
