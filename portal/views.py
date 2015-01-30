@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from apis.models import RequestLogV1
 from portal.forms import PortalLoginForm
 
 
@@ -10,7 +11,9 @@ def hello_world(request):
 
 @login_required()
 def portal_home(request):
-    return render(request, 'portal/pages/portal_home.html')
+    template_data = {
+        'total_api_requests': RequestLogV1.objects.all().count()}
+    return render(request, 'portal/pages/portal_home.html', template_data)
 
 
 def portal_login(request):
