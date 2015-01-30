@@ -17,11 +17,6 @@ class APIInfoTestCase(TestCase):
         self.assertIsNotNone(view)
         self.assertEqual(view.func, proxy)
 
-    def test_info_accepts_only_get(self):
-        request = RequestFactory().post(self.url)
-        response = proxy(request)
-        self.assertTrue(isinstance(response, HttpResponseNotAllowed))
-
     def test_mock_info_returns_valid_json(self):
         with self.settings(API_IMPOSSIBLE_LINE_ENGINE="MockEngine"):
             request = RequestFactory().get(self.url)
