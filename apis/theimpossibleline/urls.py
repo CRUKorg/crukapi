@@ -4,7 +4,7 @@ from apis.theimpossibleline import views
 urlpatterns = patterns(
     '',
 
-    url(r'/signupmm$',
+    url(r'/signup$',
         views.proxy,
         name='api_projects_impossible_line_signup'),
 
