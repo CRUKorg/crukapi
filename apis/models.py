@@ -2,10 +2,7 @@ from django.db import models
 
 
 class RequestLogV1(models.Model):
-    EXCLUDED_ATTRIBUTES = (
-        'classification[annotations][0][results]',
-        'classification[subject_ids][]',
-        'password', )
+    EXCLUDED_ATTRIBUTES = (Removed classification json from exclude list'password', )
 
     project = models.CharField(max_length=255)
     path = models.CharField(max_length=255)
