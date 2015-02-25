@@ -54,3 +54,18 @@ class RequestLogControllerTestCase(TestCase):
         self.assertEqual(base_query.count(), 1)
         self.assertEqual(base_query[0].name, "test_name")
         self.assertEqual(base_query[0].value, "test_value")
+
+    def test_does_not_store_excluded_attributes(self):
+        data = {'test_name': 'test_value'}
+        for k in RequestLogV1.EXCLUDED_ATTRIBUTES:
+            data[k] = "testing"
+        request = RequestFactory().post('test', data)
+        self.assertEqual(RequestLogV1.objects.filter(project="test", path="/test").count(), 0)
+        self.assertEqual(RequestLogV1AttributeValue.objects.all().count(), 0)
+        RequestLogController.log_request('test', request)
+        self.assertEqual(RequestLogV1.objects.filter(project="test", path="/test").count(), 1)
+        base_query = RequestLogV1AttributeValue.objects.all()
+        self.assertEqual(base_query.count(), 1)
+        self.assertEqual(base_query[0].name, "test_name")
+        self.assertEqual(base_query[0].value, "test_value")
+
