@@ -7,6 +7,7 @@ from django.test import TestCase, RequestFactory
 from apis.theimpossibleline.engines import EngineFactory, ZooniverseEngine, MockEngine
 from apis.theimpossibleline.views import proxy
 
+
 class APIInfoTestCase(TestCase):
 
     def setUp(self):

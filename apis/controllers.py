@@ -14,3 +14,4 @@ class RequestLogController(object):
     def log_request(cls, project, request):
         log_entry = RequestLogV1(project=project, path=request.path)
         log_entry.save()
+        log_entry.add_attributes(request.GET if request.method == "GET" else request.POST)
