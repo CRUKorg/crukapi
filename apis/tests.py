@@ -23,6 +23,10 @@ class BaseAPITestCase(TestCase):
 
 class RequestLogControllerTestCase(TestCase):
 
+    def setUp(self):
+        RequestLogV1AttributeValue.objects.all().delete()
+        RequestLogV1.objects.all().delete()
+
     def test_log_request(self):
         request = RequestFactory().get('test')
         self.assertEqual(RequestLogV1.objects.filter(project="test", path="/test").count(), 0)
