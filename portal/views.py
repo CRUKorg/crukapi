@@ -1,4 +1,5 @@
 import json
+import datetime
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.db.models import Count
@@ -19,17 +20,31 @@ def portal_home(request):
 
 @login_required()
 def api_theimpossibleline(request):
-    requests = RequestLogV1.objects.filter(project="theimpossibleline")
+    def create_chart_data(sequence):
+        chart_data = [['Day', 'Requests']]
+        if not sequence:
+            return chart_data
+        min_date = datetime.datetime.strptime(sorted(sequence, key=lambda x: x['day'])[0]['day'], "%Y-%m-%d")
+        max_date = datetime.datetime.strptime(sorted(sequence, key=lambda x: x['day'], reverse=True)[0]['day'], "%Y-%m-%d")
+        sequence_dict = {}
+        for s in sequence:
+            sequence_dict[s['day']] = s['count']
+        new_sequence = []
+        while min_date <= max_date:
+            key = min_date.strftime("%Y-%m-%d")
+            new_sequence.append({'day': key, 'count': sequence_dict.get(key, 0)})
+            min_date += datetime.timedelta(days=1)
+        for s in new_sequence:
+            chart_data.append(["%s" % str(s['day']), s['count']])
+        return chart_data
+
+    requests = RequestLogV1.objects.filter(project="theimpossibleline").order_by("created")
     requests_by_day = requests.extra(select={'day': 'date(created)'}).values('day').annotate(count=Count('created'))
-    request_chart_data = [['Day', 'Requests']]
-    for classification_by_day in requests_by_day:
-        request_chart_data.append(["%s" % str(classification_by_day['day']), classification_by_day['count']])
+    request_chart_data = create_chart_data(requests_by_day)
 
     registration_requests = requests.filter(path=reverse("api_projects_impossible_line_signup"))
     registrations_by_day = registration_requests.extra(select={'day': 'date(created)'}).values('day').annotate(count=Count('created'))
-    registrations_chart_data = [['Day', 'Registrations']]
-    for classification_by_day in registrations_by_day:
-        registrations_chart_data.append(["%s" % str(classification_by_day['day']), classification_by_day['count']])
+    registrations_chart_data = create_chart_data(registrations_by_day)
 
     template_data = {
         'total_registrations': registration_requests.count(),
