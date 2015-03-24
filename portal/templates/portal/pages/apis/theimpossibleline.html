@@ -11,7 +11,11 @@
         });
 
         function draw_google_chart(chart_data, chart_id) {
-            var data = google.visualization.arrayToDataTable(chart_data);
+            var data = new google.visualization.DataTable();
+            data.addColumn('date', 'Day');
+            data.addColumn('number', 'Count');
+            for (var x=1; x<chart_data.length; x++)
+                data.addRow([new Date(chart_data[x][0]), chart_data[x][1]])
             var options = {
               title: '',
               legend: {position: 'none'}
