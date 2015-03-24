@@ -1,5 +1,27 @@
 {% extends 'portal/pages/portal_home.html' %}
 
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript" language="JavaScript">
+        google.setOnLoadCallback(function(){
+            $(function(){
+                draw_google_chart({{ chart_requests_over_time|safe }}, 'chart-request-over-time');
+                draw_google_chart({{ chart_registrations_over_time|safe }}, 'chart-registrations-over-time');
+            });
+        });
+
+        function draw_google_chart(chart_data, chart_id) {
+            var data = google.visualization.arrayToDataTable(chart_data);
+            var options = {
+              title: '',
+              legend: {position: 'none'}
+            };
+            var chart = new google.visualization.AreaChart(document.getElementById(chart_id));
+            chart.draw(data, options);
+        }
+    </script>
+{% endblock %}
+
 {% block left_hand_menu %}
     {% include 'portal/pages/apis/_menu.html' with active='theimpossibleline' %}
 {% endblock %}
@@ -22,6 +44,10 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="col-sm-7" style="border-left: 1px solid #DDD;">
+                    <h4>Total registrations over time</h4>
+                    <div id="chart-registrations-over-time" style="height: 200px; width: 100%;"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -41,6 +67,10 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+                <div class="col-sm-7" style="border-left: 1px solid #DDD;">
+                    <h4>Total requests over time</h4>
+                    <div id="chart-request-over-time" style="height: 200px; width: 100%;"></div>
                 </div>
             </div>
         </div>
