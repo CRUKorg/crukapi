@@ -20,7 +20,7 @@ urlpatterns = patterns(
     url(r'^portal', include("portal.urls")),
 
     # Urls for the main portal
-    url(r'^api', include("apis.urls")),
+    url(r'^api/', include("apis.urls")),
 
     # Urls for LB heath check
     url(r'^heartbeat', heartbeat, name="heartbeat"),
