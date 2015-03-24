@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from apis.models import RequestLogV1
@@ -11,9 +12,16 @@ def hello_world(request):
 
 @login_required()
 def portal_home(request):
+    return redirect('portal_api_theimpossibleline')
+
+
+@login_required()
+def api_theimpossibleline(request):
+    requests = RequestLogV1.objects.filter(project="theimpossibleline")
     template_data = {
-        'total_api_requests': RequestLogV1.objects.all().count()}
-    return render(request, 'portal/pages/portal_home.html', template_data)
+        'total_registrations': requests.filter(path=reverse("api_projects_impossible_line_signup")).count(),
+        'total_api_requests': requests.count()}
+    return render(request, 'portal/pages/apis/theimpossibleline.html', template_data)
 
 
 def portal_login(request):
