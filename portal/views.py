@@ -24,18 +24,17 @@ def api_theimpossibleline(request):
         chart_data = [['Day', 'Requests']]
         if not sequence:
             return chart_data
+        for s in sequence:
+            if type(s['day']) is not datetime.date:
+                s['day'] = datetime.datetime.strptime(s['day'], "%Y-%m-%d")
         min_date = sorted(sequence, key=lambda x: x['day'])[0]['day']
-        if type(min_date) is not datetime.date:
-            min_date = datetime.datetime.strptime(min_date, "%Y-%m-%d")
         max_date = sorted(sequence, key=lambda x: x['day'], reverse=True)[0]['day']
-        if type(max_date) is not datetime.date:
-            max_date = datetime.datetime.strptime(max_date, "%Y-%m-%d")
         sequence_dict = {}
         for s in sequence:
             sequence_dict[s['day']] = s['count']
         new_sequence = []
         while min_date <= max_date:
-            key = min_date.strftime("%Y-%m-%d")
+            key = min_date.date()
             new_sequence.append({'day': key, 'count': sequence_dict.get(key, 0)})
             min_date += datetime.timedelta(days=1)
         for s in new_sequence:
