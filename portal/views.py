@@ -21,13 +21,13 @@ def portal_home(request):
 def api_theimpossibleline(request):
     requests = RequestLogV1.objects.filter(project="theimpossibleline")
     requests_by_day = requests.extra(select={'day': 'date(created)'}).values('day').annotate(count=Count('created'))
-    request_chart_data = [['Day', 'Classifications']]
+    request_chart_data = [['Day', 'Requests']]
     for classification_by_day in requests_by_day:
         request_chart_data.append(["%s" % str(classification_by_day['day']), classification_by_day['count']])
 
     registration_requests = requests.filter(path=reverse("api_projects_impossible_line_signup"))
-    registrations_by_day = requests.extra(select={'day': 'date(created)'}).values('day').annotate(count=Count('created'))
-    registrations_chart_data = [['Day', 'Classifications']]
+    registrations_by_day = registration_requests.extra(select={'day': 'date(created)'}).values('day').annotate(count=Count('created'))
+    registrations_chart_data = [['Day', 'Registrations']]
     for classification_by_day in registrations_by_day:
         registrations_chart_data.append(["%s" % str(classification_by_day['day']), classification_by_day['count']])
 
