@@ -91,7 +91,4 @@ BOOTSTRAP3 = {
 
 API_IMPOSSIBLE_LINE_ENGINE = 'ZooniverseEngine'
 
-try:
-    from local_settings import *
-except:
-    pass
+from local_settings import *
