@@ -79,7 +79,7 @@ class APISignupTestCase(TestCase):
         response_object = json.loads(response.content)
         self.assertIn("success", response_object)
         self.assertFalse(response_object['success'])
-        self.assertTrue("Login can't be blank" in response_object['message'])
+        self.assertTrue("Display name can't be blank. Email can't be blank. Password is too short (minimum is 4 characters)" in response_object['message'])
 
     def test_proxy_can_pass_post_variable(self):
         data = {'username': 'test', 'password': 'test', 'email': 'test@test.com', 'real_name': 'test'}
@@ -88,7 +88,7 @@ class APISignupTestCase(TestCase):
         response_object = json.loads(response.content)
         self.assertIn("success", response_object)
         self.assertFalse(response_object['success'])
-        self.assertTrue("Login has already been taken" in response_object['message'])
+        self.assertTrue("Display name has already been taken. Email has already been taken" in response_object['message'])
 
 
 class APILoginTestCase(TestCase):

@@ -7,7 +7,6 @@ from django.http import HttpResponse, HttpResponseNotAllowed
 
 
 class EngineFactory(object):
-
     @classmethod
     def get_engine(cls, request):
         module = sys.modules[__name__]
@@ -16,7 +15,6 @@ class EngineFactory(object):
 
 
 class MockEngine(object):
-
     mock_info_json = {
         "id": "53c3e9090ab4c05d28000001",
         "activated_subjects_at": "2015-01-27T09:00:14Z",
@@ -29,12 +27,12 @@ class MockEngine(object):
         "workflow_name": "impossible_line"}
 
     mock_status_json = {
-        'random': 0.4766550899055938, 
-        'classification_count': 85, 
+        'random': 0.4766550899055938,
+        'classification_count': 85,
         'created_at': '2014-07-14T15:41:24Z',
         'updated_at': '2014-07-14T15:41:24Z',
         'state': 'active',
-        'zooniverse_id': 'AIL000000x', 
+        'zooniverse_id': 'AIL000000x',
         'coords': [],
         'location': {
             'standard': 'http://www.generunner.net.s3-website-us-east-1.amazonaws.com/subjects/standard/52e42e8806715edea2000055.txt'},
@@ -55,18 +53,16 @@ class MockEngine(object):
 
 
 class ZooniverseEngine(MockEngine):
-
     def proxy(self):
         if self.request.method == "GET":
-            request = urllib2.Request(
-                'https://api.zooniverse.org%s?%s' % (
-                    ''.join(self.request.path[4:]),
-                    '&'.join(["%s=%s" % (k, v) for k, v in self.request.GET.items()])))
+            url = 'https://api.zooniverse.org%s?%s' % (
+                ''.join(self.request.path[4:]), '&'.join(["%s=%s" % (k, v) for k, v in self.request.GET.items()]))
+            request = urllib2.Request(url)
         elif self.request.method == "POST":
-            request = urllib2.Request(
-                'https://api.zooniverse.org%s' % ''.join(self.request.path[4:]),
-                urllib.urlencode(self.request.POST))
+            url = 'https://api.zooniverse.org%s' % ''.join(self.request.path[4:])
+            request = urllib2.Request(url, urllib.urlencode(self.request.POST))
         else:
             return HttpResponseNotAllowed(["GET", "POST"])
+        print(url)
         response = urllib2.urlopen(request)
         return HttpResponse(response.read(), content_type='application/json')
