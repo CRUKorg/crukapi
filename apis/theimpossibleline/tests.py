@@ -89,7 +89,7 @@ class APISignupTestCase(TestCase):
         response_object = json.loads(response.content)
         self.assertIn("success", response_object)
         self.assertFalse(response_object['success'])
-        self.assertTrue("Display name has already been taken. Email has already been taken" in response_object['message'])
+        self.assertTrue("Login has already been taken. Email has already been taken" in response_object['message'])
 
 
 class APILoginTestCase(TestCase):
